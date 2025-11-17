@@ -8,54 +8,41 @@ export const postService = {
   },
 
   async createPost(content: string, image?: string): Promise<Post> {
-    try {
-      const userData = localStorage.getItem("user");
-      
-      if (!userData) {
-        throw new Error("User not logged in");
-      }
-
-      const user = JSON.parse(userData);
-      
-      if (!user || !user.id) {
-        throw new Error("User ID not found");
-      }
-
-      const postData = {
-        content,
-        image: image || null,
-        authorId: user.id
-      };
-
-      console.log("Creating post with data:", postData);
-
-      const response = await api.post("/posts", postData);
-      return response.data;
-    } catch (error) {
-      console.error("Error creating post:", error);
-      throw error;
+    const userData = localStorage.getItem("user");
+    
+    if (!userData) {
+      throw new Error("User not logged in");
     }
+
+    const user = JSON.parse(userData);
+    
+    if (!user?.id) {
+      throw new Error("User ID not found");
+    }
+
+    const response = await api.post("/posts", { 
+      content, 
+      image, 
+      authorId: user.id 
+    });
+    
+    return response.data;
   },
 
   async likePost(postId: string): Promise<Post> {
-    try {
-      const userData = localStorage.getItem("user");
-      
-      if (!userData) {
-        throw new Error("User not logged in");
-      }
-
-      const user = JSON.parse(userData);
-      
-      const response = await api.patch(`/posts/${postId}/like`, { 
-        userId: user.id 
-      });
-      
-      return response.data;
-    } catch (error) {
-      console.error("Error liking post:", error);
-      throw error;
+    const userData = localStorage.getItem("user");
+    
+    if (!userData) {
+      throw new Error("User not logged in");
     }
+
+    const user = JSON.parse(userData);
+    
+    const response = await api.patch(`/posts/${postId}/like`, { 
+      userId: user.id 
+    });
+    
+    return response.data;
   },
 
   async addComment(postId: string, content: string): Promise<Post> {
