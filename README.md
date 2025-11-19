@@ -33,9 +33,9 @@ Sistema de rede social completo desenvolvido como projeto fullstack, permitindo 
 Conta com:
 
 - Interface moderna usando **Material-UI**
-- API RESTful robusta com **Express + TypeScript**
+- API RESTful com **Express + TypeScript**
 - Banco de dados **PostgreSQL + Prisma ORM**
-- Roteamento protegido e autenticação JWT
+- Roteamento protegido; autenticação simples com token de exemplo (sem JWT)
 
 ---
 
@@ -43,16 +43,14 @@ Conta com:
 
 ### 🔐 Autenticação
 - Cadastro com validação
-- Login com JWT
+- Login com token de exemplo (sem JWT)
 - Logout
 - Proteção de rotas no frontend
 
 ### 📝 Posts
 - Criação de posts com texto
-- Upload opcional de imagens
-- Feed atualizado automaticamente
-- Visualização de post individual
-- Ordenação por data
+- Campo de imagem previsto no schema (não implementado no frontend)
+- Feed ordenado por data
 
 ### ❤️ Interações
 - Sistema de curtidas (like/unlike)
@@ -89,10 +87,10 @@ Conta com:
 
 ## 📋 Pré-requisitos
 
-- Node.js 16+
+- Node.js 18+
 - npm ou yarn
 - Git instalado
- - Docker e Docker Compose (para rodar PostgreSQL)
+- Docker e Docker Compose (opcional, para rodar PostgreSQL)
 
 ---
 
@@ -100,8 +98,8 @@ Conta com:
 
 ### 1. Clonar o repositório
 ```bash
-git clone https://github.com/Luisfsiq/api-quarta.git
-cd api-quarta
+git clone <URL_DO_REPOSITORIO>
+cd api-fullstack-redesocial
 ```
 2. Backend
 ```bash
@@ -125,7 +123,7 @@ Isso sobe o Postgres em `localhost:5433` com:
 - Senha: `admin`
 - Banco: `redesocial`
 
-Configure o `.env` do backend (já incluso `backend/.env`):
+Crie o arquivo `.env` no backend (`backend/.env`):
 
 ```env
 DATABASE_URL="postgresql://admin:admin@localhost:5433/redesocial"
@@ -177,6 +175,8 @@ npm run preview
 
 Frontend: http://localhost:5173
 
+Frontend (produção): https://redesocial-frontend.onrender.com/login
+
 Backend: http://localhost:3000
 
 Health Check: http://localhost:3000/api/health
@@ -203,12 +203,13 @@ Se preferir SQLite para testes rápidos, altere o `datasource` em `schema.prisma
 - Service Type: `Web Service`
 - Root Directory: `backend`
 - Build Command: `npm install && npm run build`
-- Start Command: `npm start`
+- Start Command: `npx prisma migrate deploy && npm run seed && node dist/index.js`
 - Health Check Path: `/api/health`
 - Environment:
   - `NODE_VERSION=20`
   - `DATABASE_URL` (do passo 1)
-- O `prestart` já executa `npx prisma migrate deploy`. Para popular dados, rode uma vez o script de seed: `npm run seed`.
+  
+Migrações são aplicadas pelo `startCommand` acima; o seed roda uma vez no start.
 
 ### 3) Frontend (Static Site)
 - Service Type: `Static Site`
@@ -234,27 +235,39 @@ Se preferir SQLite para testes rápidos, altere o `datasource` em `schema.prisma
 ```bash
 api-fullstack-redesocial/
 ├── backend/
-│   ├── src/
-│   │   ├── routes/
-│   │   │   ├── userRoutes.ts
-│   │   │   ├── postRoutes.ts
-│   │   │   └── commentRoutes.ts
-│   │   ├── schemas/
-│   │   ├── middleware/
-│   │   └── index.ts
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── package.json
 │   ├── prisma/
+│   │   ├── migrations/
 │   │   ├── schema.prisma
 │   │   └── seed.ts
-│   └── package.json
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   ├── pages/
-    │   ├── services/
-    │   ├── contexts/
-    │   ├── types/
-    │   └── App.tsx
-    └── package.json
+│   └── src/
+│       ├── index.ts
+│       ├── middleware/
+│       ├── routes/
+│       │   ├── commentRoutes.ts
+│       │   ├── postRoutes.ts
+│       │   └── userRoutes.ts
+│       └── schemas/
+├── frontend/
+│   ├── index.html
+│   ├── public/
+│   │   ├── 404.html
+│   │   └── index.html
+│   ├── package.json
+│   └── src/
+│       ├── App.tsx
+│       ├── components/
+│       ├── config/
+│       ├── contexts/
+│       ├── main.tsx
+│       ├── pages/
+│       ├── services/
+│       ├── types/
+│       └── vite-env.d.ts
+├── render.yaml
+└── package-lock.json
 ```
 🔌 API Endpoints
 🔐 Autenticação
@@ -271,7 +284,7 @@ GET /api/users/:id
 
 PUT /api/users/:id
 
-GET /api/users/profile
+ (não há endpoint `/api/users/profile` na API atual)
 
 📝 Posts
 
@@ -284,6 +297,7 @@ POST /api/posts
 PUT /api/posts/:id
 
 DELETE /api/posts/:id
+PATCH /api/posts/:id/like
  
 ---
 
@@ -333,19 +347,16 @@ GET /api/comments
 📊 Scripts
 Backend
 ```bash
-npm run dev
-
-npm run build
-
-npm start
+npm run dev      # desenvolvimento (TSX)
+npm run build    # compila TypeScript
+npm start        # node dist/index.js
+npm run seed     # popula dados de exemplo
 ```
 Frontend
 ```bash
-npm run dev
-
-npm run build
-
-npm run preview
+npm run dev      # Vite dev server
+npm run build    # tsc + Vite build (via node)
+npm run preview  # preview de produção (via node)
 ```
 👤 Dados de Teste
 ```bash
@@ -360,3 +371,16 @@ Luis F R B Siqueira
 GitHub: @Luisfsiq
 
 Projeto: api-fullstack-redesocial
+
+---
+
+## 🔎 Informações Corrigidas
+
+- Nome do repositório correto: `api-fullstack-redesocial` (antes `api-quarta`).
+- Autenticação: o backend retorna um token de exemplo; não há JWT/hashing.
+- Upload de imagens de post: não implementado no frontend (campo existe no schema).
+- Endpoint `/api/users/profile`: não existe na API atual (o frontend tenta usar como fallback).
+- Versões de Node: Docker usa Node 18; Render define `NODE_VERSION=20`.
+- Build do frontend: scripts executam Vite via Node para evitar erro de permissão em Linux.
+- Rewrites de SPA: já configurados via `render.yaml` (`/*` → `/index.html`).
+- Avatar: campo salvo na API, mas UI usa apenas a inicial do nome; pode-se ajustar `<Avatar src={...}>`.
