@@ -373,14 +373,3 @@ GitHub: @Luisfsiq
 Projeto: api-fullstack-redesocial
 
 ---
-
-## 🔎 Informações Corrigidas
-
-- Nome do repositório correto: `api-fullstack-redesocial` (antes `api-quarta`).
-- Autenticação: o backend retorna um token de exemplo; não há JWT/hashing.
-- Upload de imagens de post: não implementado no frontend (campo existe no schema).
-- Endpoint `/api/users/profile`: não existe na API atual (o frontend tenta usar como fallback).
-- Versões de Node: Docker usa Node 18; Render define `NODE_VERSION=20`.
-- Build do frontend: scripts executam Vite via Node para evitar erro de permissão em Linux.
-- Rewrites de SPA: já configurados via `render.yaml` (`/*` → `/index.html`).
-- Avatar: campo salvo na API, mas UI usa apenas a inicial do nome; pode-se ajustar `<Avatar src={...}>`.
