@@ -16,6 +16,11 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 
+// Rota raiz para evitar "Cannot GET /"
+app.get("/", (req, res) => {
+  res.send("API OK");
+});
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "API is running" });
 });
